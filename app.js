@@ -118,7 +118,7 @@ function renderLogin() {
       <div class="brand"><b>喺邊</b><span>屋企嘢放咗喺邊</span></div>
       <form id="login-form" class="form login-card">
         <p>請輸入家庭密碼先進入。唔識密碼嘅人睇唔到清單。</p>
-        <label class="field">家庭密碼<input name="password" type="password" required autocomplete="current-password" autofocus></label>
+        <label class="field">家庭密碼<input name="password" type="password" required autocomplete="current-password"></label>
         <label class="remember"><input name="remember" type="checkbox" checked> 記住我（呢部電話下次唔使再輸入）</label>
         <p class="login-error hide" id="login-error">密碼不正確，請再試。</p>
         <button class="btn" type="submit">進入</button>
@@ -399,11 +399,17 @@ function renderLocations() {
   return `<div class="page-head"><h1>位置</h1><button class="text-btn" data-go="#/locations/new">新增</button></div>
     <div class="section">
       <div class="card-list">
-        ${list.map((l) => `<button class="loc-card" data-go="#/locations/${l.id}">
-          ${l.photo ? `<div class="thumb"><img src="${l.photo}" alt=""></div>` : `<div class="thumb">📍</div>`}
-          <div class="meta"><b>${escapeHtml(l.name)}</b><p>${escapeHtml(l.note || "未有說明")} · ${countAt(l.id)} 件物品</p></div>
-          <span class="badge">${countAt(l.id)}</span>
-        </button>`).join("") || `<div class="empty">未有位置。先寫間屋有邊啲位置。</div>`}
+        ${list.map((l) => `<div class="loc-card">
+          <button type="button" class="loc-main" data-go="#/locations/${l.id}">
+            ${l.photo ? `<div class="thumb"><img src="${l.photo}" alt=""></div>` : `<div class="thumb">📍</div>`}
+            <div class="meta"><b>${escapeHtml(l.name)}</b><p>${escapeHtml(l.note || "未有說明")} · ${countAt(l.id)} 件物品</p></div>
+            <span class="badge">${countAt(l.id)}</span>
+          </button>
+          <div class="card-actions">
+            <button type="button" class="linkish" data-go="#/locations/${l.id}/edit">改名／修改</button>
+            <button type="button" class="linkish danger-link" data-action="delete-loc" data-id="${l.id}">刪除</button>
+          </div>
+        </div>`).join("") || `<div class="empty">未有位置。先寫間屋有邊啲位置。</div>`}
       </div>
     </div>
     <button class="fab" data-go="#/locations/new" aria-label="新增位置">＋</button>
@@ -417,7 +423,7 @@ function renderLocation(id) {
   const archived = state.items.filter((i) => i.locationId === id && i.status === "archived");
   return `<div class="page-head">
       <button class="icon-btn" data-go="#/locations">返回</button>
-      <h1></h1>
+      <h1>${escapeHtml(l.name)}</h1>
       <button class="text-btn" data-go="#/locations/${l.id}/edit">修改</button>
     </div>
     <div class="detail">
@@ -425,15 +431,15 @@ function renderLocation(id) {
       <p class="kicker">由${escapeHtml(member(l.updatedBy).name)}更新 ${fmtTime(l.updatedAt)}</p>
       <h2>${escapeHtml(l.name)}</h2>
       ${l.note ? `<p class="notes">${escapeHtml(l.note)}</p>` : ""}
-      <div class="section-h" style="padding-top:8px"><h2>呢度有咩</h2><span>${list.length} 件</span></div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn" data-go="#/items/new?loc=${l.id}">喺呢度加物品</button>
+        <button class="btn danger" data-action="delete-loc" data-id="${l.id}">刪除位置</button>
+      </div>
+      <div class="section-h" style="padding-top:18px"><h2>呢度有咩</h2><span>${list.length} 件</span></div>
       ${list.length ? `<div class="card-list">${list.map(itemCard).join("")}</div>` : `<div class="empty">呢個位置暫時未有物品。</div>`}
       ${archived.length ? `<p class="kicker" style="margin-top:16px">已封存 ${archived.length} 件</p>` : ""}
       <div class="section-h" style="padding-top:16px"><h2>改動紀錄</h2><button class="linkish" data-go="#/logs">全部紀錄</button></div>
       ${logCards(relatedLogs({ locationId: l.id }), "呢個位置暫時未有改動紀錄。")}
-      <div class="actions" style="margin-top:18px">
-        <button class="btn" data-go="#/items/new?loc=${l.id}">喺呢度加物品</button>
-        <button class="btn danger" data-action="delete-loc" data-id="${l.id}">刪除位置</button>
-      </div>
     </div>
     ${nav("locs")}`;
 }
