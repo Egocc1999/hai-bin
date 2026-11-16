@@ -1,0 +1,6 @@
+.auth-salt
+.auth-hash
+.auth-meta.json
+*密碼*
+screenshots/
+test-results/
