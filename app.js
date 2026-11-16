@@ -460,7 +460,7 @@ function renderLocForm(id) {
       <label class="field">說明<textarea name="note" placeholder="邊邊、第幾格、點樣認">${escapeHtml(l?.note || "")}</textarea></label>
       <div class="field"><span>位置相片</span>
         <div class="photo-row">
-          ${(photoDrafts[0] || l?.photo) ? `<div class="shot"><img src="${photoDrafts[0] || l.photo}" alt=""><button type="button" data-action="remove-photo" data-index="0">×</button></div>` : ""}
+          ${photoDrafts[0] ? `<div class="shot"><img src="${photoDrafts[0]}" alt=""><button type="button" data-action="remove-photo" data-index="0" aria-label="刪除相片">×</button></div>` : ""}
           <label class="photo-add">影相或上傳
             <input type="file" accept="image/*" capture="environment" hidden data-action="add-photo">
           </label>
@@ -565,7 +565,7 @@ async function handleAction(action, el) {
     showMemberSheet();
   } else if (action === "remove-photo") {
     const i = Number(el.getAttribute("data-index"));
-    photoDrafts.splice(i, 1);
+    if (Number.isInteger(i) && i >= 0) photoDrafts.splice(i, 1);
     render();
   } else if (action === "archive-item") {
     const it = item(id);
